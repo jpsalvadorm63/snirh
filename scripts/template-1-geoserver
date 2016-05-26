@@ -1,0 +1,534 @@
+/*          def buildList(modo,codigo) {
+
+              def list = []
+              if(modo == 'Demarcaciones') {
+                Demarcacion.list(sort:'nombre').each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo1', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Demarcacion') {
+                Demarcacion.list(sort:'nombre').each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo1', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Sistemas') {
+                Sistema.findAllByNivel('SISTEMA',[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo1', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Niveles1') {
+                Pfabsteter.findAllByNivel('NIVEL1',[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo1', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Cuencas') {
+                int dad = Sistema.findByCodigo(codigo).id
+                Sistema.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo2', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Subcuencas') {
+                int dad = Sistema.findByCodigo(codigo).id
+                Sistema.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo3', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Subcuenca') {
+                int dad = Sistema.findByCodigo(codigo).dad
+                Sistema.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo3', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Provincias') {
+                DivisionPolitica.findAllByNivel('PROVINCIA',[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo1', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Cantones') {
+                int dad = DivisionPolitica.findByCodigo(codigo).id
+                DivisionPolitica.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo2', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Parroquias') {
+                int dad = DivisionPolitica.findByCodigo(codigo).id
+                DivisionPolitica.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo3', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Parroquia') {
+                int dad = DivisionPolitica.findByCodigo(codigo).dad
+                DivisionPolitica.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo3', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Niveles2') {
+                int dad = Pfabsteter.findByCodigo(codigo).id
+                Pfabsteter.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo2', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Niveles3') {
+                int dad = Pfabsteter.findByCodigo(codigo).id
+                Pfabsteter.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo3', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Niveles4') {
+                int dad = Pfabsteter.findByCodigo(codigo).id
+                Pfabsteter.findAllByDad(dad,[sort:'nombre']).each {
+                   list.add([id:it.codigo, controller:'geoserver', action:'showInfo4', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Niveles5') {
+                int dad = Pfabsteter.findByCodigo(codigo).id
+                Pfabsteter.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo5', nombre:it.nombre])
+                }
+              }
+              else
+              if(modo == 'Nivel5') {
+                int dad = Pfabsteter.findByCodigo(codigo).dad
+                Pfabsteter.findAllByDad(dad,[sort:'nombre']).each {
+                  list.add([id:it.codigo, controller:'geoserver', action:'showInfo5', nombre:it.nombre])
+                }
+              }
+
+              return list
+          }
+*/
+
+
+
+
+    /*session.condicion = ''
+    session.modo2 = nextModo[session.modo1]
+        session.modo3 = null
+        session.modo4 = null
+        session.modo5 = null
+    session.cdgo2 = params.id
+    session.nivel = queryLevel[session.modo2]
+    def geomapa = mapas[session.modo2]
+
+    if (session.modo2 == 'Subcuencas')
+      session.condicion = " and p.cuenca.id = ${Sistema.findByCodigo(session.cdgo2).id}"
+    if (session.modo2 == 'Parroquias')
+      session.condicion = " and p.canton.id = ${DivisionPolitica.findByCodigo(session.cdgo2).id}"
+    if (session.modo2 == 'Niveles3')
+      session.condicion = " and p.pfabsteter3.dad = ${Pfabsteter.findByCodigo(session.cdgo2).id}"
+    println "showInfo2() modo:${session.modo2}, codigo:${session.cdgo2}"
+    def list = buildList(session.modo2,session.cdgo2)
+    def cajaTxt = calcBox(session.modo2,session.cdgo2)
+    def tPrincipal = tituloPrincipal[session.modo2]
+    def tSeleccion = tituloSeleccion[session.modo2]
+    def viewParams = "VIEWPARAMS:'${viewparams[session.modo2]}:${session.cdgo2}',"
+
+    render( view : "showInfo",
+            model : [ nivel : session.nivel,
+            modo : session.modo2,
+            geoserver : geoserver,
+            geomapa : geomapa,
+            otrosMapas : session.otrosMapas,
+            viewparams : "$viewParams",
+            mainList : list,
+            box : cajaTxt,
+            tituloPrincipal : "${tPrincipal}",
+            tituloSeleccion : "${tSeleccion}",
+            returnp:returnp,
+            selectedCdgo:"$params.id",
+            zona:"${(objs[session.modo2]).findByCodigo(params.id).nombre}"] ) */
+
+
+
+
+ def showInfo3() {
+    def returnp = params
+    session.condicion = ''
+    session.modo3 = nextModo[session.modo2]
+        session.modo4 = null
+        session.modo5 = null
+    session.cdgo3 = params.id
+    session.nivel = queryLevel[session.modo3]
+    def geomapa = mapas[session.modo3]
+    println "showInfo3() modo:${session.modo3}, codigo:${session.cdgo3}"
+    if (session.modo3 == 'Subcuenca')
+      session.condicion = "and p.subcuenca.id = ${Sistema.findByCodigo(session.cdgo3).id}"
+    if (session.modo3 == 'Parroquia')
+      session.condicion = "and p.parroquia.id = ${DivisionPolitica.findByCodigo(session.cdgo3).id}"
+    if (session.modo3 == 'Niveles4')
+      session.condicion = "and p.pfabsteter4.dad = ${Pfabsteter.findByCodigo(session.cdgo3).id}"
+    println "showInfo3() modo:${session.modo3}, codigo:${session.cdgo3}"
+
+    def list = buildList(session.modo3,session.cdgo3)
+    def cajaTxt = calcBox(session.modo3,session.cdgo3)
+    def tPrincipal = tituloPrincipal[session.modo3]
+    def tSeleccion = tituloSeleccion[session.modo3]
+    def viewParams = "VIEWPARAMS:'${viewparams[session.modo3]}:${session.cdgo3}',"
+    render( view : "showInfo",
+        model : [ nivel : session.nivel,
+            modo : session.modo3,
+            geoserver : geoserver,
+            geomapa : geomapa,
+            otrosMapas : session.otrosMapas,
+            viewparams : "$viewParams",
+            mainList : list,
+            box : cajaTxt,
+            tituloPrincipal : "${tPrincipal}",
+            tituloSeleccion : "${tSeleccion}",
+            returnp:returnp,
+            selectedCdgo:"$params.id",
+            zona:"${(objs[session.modo3]).findByCodigo(params.id).nombre}"] )
+  }
+
+  def showInfo4() {
+    def returnp = params
+
+    session.condicion = ''
+    session.modo4 = nextModo[session.modo3]
+      session.modo5 = null
+    session.cdgo4 = params.id
+    session.nivel = queryLevel[session.modo4]
+    def geomapa = mapas[session.modo4]
+    if (session.modo4 == 'Niveles5')
+      session.condicion = "and p.pfabsteter5.dad = ${Pfabsteter.findByCodigo(session.cdgo4).id}"
+    println "showInfo4() modo:${session.modo4}, codigo:${session.cdgo4}"
+    def list = buildList(session.modo4,session.cdgo4)
+    def cajaTxt = calcBox(session.modo4,session.cdgo4)
+    def tPrincipal = tituloPrincipal[session.modo4]
+    def tSeleccion = tituloSeleccion[session.modo4]
+    def viewParams = "VIEWPARAMS:'${viewparams[session.modo4]}:${session.cdgo4}',"
+    render( view : "showInfo",
+        model : [ nivel : session.nivel,
+            modo : session.modo4,
+            geoserver : geoserver,
+            geomapa : geomapa,
+            otrosMapas : session.otrosMapas,
+            viewparams : "$viewParams",
+            mainList : list,
+            box : cajaTxt,
+            tituloPrincipal : "${tPrincipal}",
+            tituloSeleccion : "${tSeleccion}",
+            returnp:returnp,
+            selectedCdgo:"$params.id",
+            zona:"${(objs[session.modo4]).findByCodigo(params.id).nombre}" ] )
+  }
+
+  def showInfo5() {
+    def returnp = params
+
+    session.condicion = ''
+    session.modo5 = nextModo[session.modo4]
+    session.cdgo5 = params.id
+    session.nivel = queryLevel[session.modo5]
+    def geomapa = mapas[session.modo5]
+    if (session.modo5 == 'Nivel5')
+      session.condicion = "and p.pfabsteter5.dad = ${Pfabsteter.findByCodigo(session.cdgo5).id}"
+    println "showInfo5() modo:${session.modo5}, codigo:${session.cdgo5}"
+    def list = buildList(session.modo5,session.cdgo5)
+    def cajaTxt = calcBox(session.modo5,session.cdgo5)
+    def tPrincipal = tituloPrincipal[session.modo5]
+    def tSeleccion = tituloSeleccion[session.modo5]
+    def viewParams = "VIEWPARAMS:'${viewparams[session.modo5]}:${session.cdgo5}',"
+
+    render( view : "showInfo",
+        model : [ nivel : session.nivel,
+            modo : session.modo5,
+            geoserver : geoserver,
+            geomapa : geomapa,
+            otrosMapas : session.otrosMapas,
+            viewparams : "$viewParams",
+            mainList : list,
+            box : cajaTxt,
+            tituloPrincipal : "${tPrincipal}",
+            tituloSeleccion : "${tSeleccion}",
+            returnp:returnp,
+            selectedCdgo:"$params.id",
+            zona:"${(objs[session.modo5]).findByCodigo(params.id).nombre}" ] )
+  }
+
+
+<title>DATAMART !</title>
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}" type="text/css">
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'mobile.css')}" type="text/css">
+  <style type="text/css">
+    body { background: url("${resource(dir: 'images', file: 'box-bg.png')}") repeat; min-height:1080px;min-width:960px; }
+    div.main_top { clear: both; background: url("${resource(dir: 'images', file: 'main-top.png')}") no-repeat top left ; border-width:0;height:96px;}
+    div#menu {top:2px;width:100%;background:transparent url("${resource(dir: 'menu/images', file: 'header_bg.gif')}") repeat-x 0 0;}
+    div#description { clear:both;width:100%;height:16px;vertical-align: middle; background-color: white;margin: 8px 0 0 16px }
+  </style>
+  <script type="text/javascript" src="${resource(dir: 'menu', file: 'jquery.js')}"></script>
+  <script type="text/javascript" src="${resource(dir: 'menu', file: 'menu.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir: 'menu', file: 'menu.css')}">
+
+  <link rel="stylesheet" type="text/css" href="${geoserver}/openlayers/theme/default/style.css"/>
+  <script src="${geoserver}/openlayers/OpenLayers.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="${resource(dir: 'css', file: 'mapas.css')}">
+
+
+
+
+    var map;
+    var lyrInfo0;
+    var pureCoverage = false;
+    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 5;
+    OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
+
+    function init(){
+      // if this is just a coverage or a group of them, disable a few items,
+      // and default to jpeg format
+      format = 'image/png';
+
+      var bounds = new OpenLayers.Bounds(
+          <%=box%>
+      );
+
+      var options = {
+        controls: [],
+        maxExtent: bounds,
+        maxResolution: 2795.3264132812546,
+        projection: "EPSG:32717",
+        units: 'm'
+      };
+      map = new OpenLayers.Map('map', options);
+
+      var lyrInfo0 = new OpenLayers.Layer.WMS(
+          "Demarcaciones", "${geoserver}/HIDRO/wms",
+          {
+            <%=viewparams%>
+            LAYERS: "${geomapa}",
+            STYLES: '',
+            format: format
+          },
+          {
+            singleTile: false,
+            ratio: 1,
+            isBaseLayer: true,
+            yx : {'EPSG:32717' : false}
+          }
+      );
+
+      map.addLayers([lyrInfo0]);
+
+      // controles
+      map.addControl(new OpenLayers.Control.PanZoomBar({
+        position: new OpenLayers.Pixel(2, 15)
+      }));
+
+      map.addControl(new OpenLayers.Control.Navigation());
+      map.zoomToExtent(bounds);
+    }
+
+
+
+
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+    <head>
+      <title>DATAMART !</title>
+      <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}" type="text/css">
+      <style type="text/css">
+        body { background: url("${resource(dir: 'images', file: 'box-bg.png')}") repeat; min-height:1080px;min-width:960px; }
+        div.main_top { clear: both; background: url("${resource(dir: 'images', file: 'main-top.png')}") no-repeat top left ; border-width:0;height:96px;}
+        div#menu {top:2px;width:100%;background:transparent url("${resource(dir: 'menu/images', file: 'header_bg.gif')}") repeat-x 0 0;}
+        div#description { clear:both;width:100%;height:16px;vertical-align: middle; background-color: white;margin: 8px 0 0 16px }
+      </style>
+      <script type="text/javascript" src="${resource(dir: 'menu', file: 'jquery.js')}"></script>
+      <script type="text/javascript" src="${resource(dir: 'menu', file: 'menu.js')}"></script>
+      <link rel="stylesheet" href="${resource(dir: 'menu', file: 'menu.css')}">
+
+      <link rel="stylesheet" href="${resource(dir: 'openlayers/openlayers/theme/default', file: 'style.css')}" type="text/css" />
+      <link rel="stylesheet" href="${resource(dir: 'openlayers', file: 'style.css')}" type="text/css" />
+      <script type="text/javascript" src="${resource(dir: 'openlayers/openlayers/lib', file: 'OpenLayers.js')}"></script>
+
+      <script defer="defer" type="text/javascript">
+        var map;
+        function init() {
+           map = new OpenLayers.Map('map', {
+            controls: [
+              new OpenLayers.Control.Navigation(),
+              new OpenLayers.Control.PanZoomBar(),
+              new OpenLayers.Control.LayerSwitcher({'ascending':false}),
+              new OpenLayers.Control.Permalink(),
+              new OpenLayers.Control.ScaleLine(),
+              new OpenLayers.Control.MousePosition(),
+              new OpenLayers.Control.OverviewMap(),
+              new OpenLayers.Control.KeyboardDefaults()
+            ],
+            numZoomLevels: 6 });
+          var ol_wms = new OpenLayers.Layer.WMS( "OpenLayers WMS",
+              "${geoserver}/HIDRO/wms",
+              {<%=viewparams%>
+                LAYERS: "${geomapa}"} );
+          map.addLayers([ol_wms]);
+          if (!map.getCenter()) map.zoomToMaxExtent();
+        }
+      </script>
+
+    </head>
+
+    <body onload="init()">
+
+      <div class="main_top" ></div>
+      <div id="menu">
+        <ul class="menu">
+          <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+          <li><g:link controller="geoserver" action="showInfo" id="Demarcaciones">Demarcaciones</g:link></li>
+          <li><g:link controller="geoserver" action="showInfo" id="Sistemas">Sistemas</g:link></li>
+          <li><g:link controller="geoserver" action="showInfo" id="Niveles1">Pfafstetter</g:link></li>
+          <li><g:link controller="geoserver" action="showInfo" id="Provincias">Provincias</g:link></li>
+        </ul>
+      </div>
+
+      <div style="width: 1024px; margin-left:auto;margin-right:auto;background-color: #e0ffff;">
+
+      <style type="text/css">
+      <!--
+        div.main-list {
+          width:180px;
+          height:400px;
+          clear:both;
+          margin-top: 31px;
+          border:1px solid #2f4f4f;
+          -moz-border-radius: 8px;
+          border-radius: 8px;
+          background-color: #ffffff;
+        }
+        div.main-list1 {
+          margin-top: 4px;
+          width:180px;
+          height:360px;
+          clear:both;
+          border:1px solid #2f4f4f;
+          -moz-border-radius: 8px;
+          border-radius: 8px;
+          background-color: #ffffff;
+        }
+
+        td.selection {
+          height: 16px;
+          padding: 4px 4px 4px 4px;
+          font-size:12px;
+          border-bottom: 1px solid #333333;
+          vertical-align:middle;
+          width:140px;
+
+        }
+        td.tituloSelection1 {
+          height:32px;
+          padding: 4px 4px 4px 4px;
+          font-size:12px;
+          background-color: #cc7a00;
+          color:white;
+          vertical-align:bottom;
+        }
+        td.selection1 {
+          height: 16px;
+          padding: 4px 4px 4px 4px;
+          font-size:12px;
+          border-bottom: 1px solid #333333;
+          vertical-align:middle;
+          width:140px;
+        }
+        td.selection a {
+          color: #664444 ;
+          font-weight: bold ;
+          text-decoration: none;
+        }
+        div.endsession {
+          width:500px;
+          height:24px;
+          margin: 8px auto 8px auto;
+          vertical-align:middle;
+          clear:both;
+          color: #8b0000;
+          border : 1px dotted #8b0000;
+          font-weight: bold;
+          font-size: 14px;
+          background-color: transparent;
+          padding: 4px 4px 4px 24px ;
+          text-align: center;
+          -moz-border-radius: 8px;
+          border-radius: 8px;
+        }
+      -->
+      </style>
+
+        <g:if test="${flash.message}">
+          <div class="endsession">
+            ${flash.message}
+          </div>
+        </g:if>
+
+      <div style="float:left;">
+
+        <div class="main-list">
+
+          <div class="tituloSelection" style="margin:0px;">
+            <%=tituloSeleccion%>
+          </div>
+          <div style="overflow-y: scroll;height:320px;overflow-x:hidden;">
+          <table style="margin: 8px 0 0 8px">
+            <tbody>
+            <g:each in="${mainList}" var="ml">
+              <tr>
+                <td class="selection">
+                  <g:link controller="${ml.geoserver}" action="${ml.action}" id="${ml.id}"><%=ml.nombre%></g:link>
+                </td>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+        <div class="main-list1" style="height:178px;margin:4px 4px 0 0;padding-top: 16px;">
+          <g:form method="post" >
+            <g:hiddenField name="paramController" value="${returnp.controller}" />
+            <g:hiddenField name="paramAction" value="${returnp.action}" />
+            <g:hiddenField name="paramId" value="${returnp.id}" />
+
+            <fieldset class="form">
+              <g:checkBox name="desplegarRios" checked="false"/>
+              <label for="desplegarRios" style="font-size: 11px; margin-left: 2px;">DESPLEGAR RIOS</label>
+              <g:radioGroup name="dominio"
+                            labels="['HIDROLOGIA','METEOROLOGIA','HIDROGEOLOGIA']"
+                            values="['HI','MET','HG']"
+                            value='HI'>
+                <p style="font-size: 11px; margin: 8px 0 0 2px;"> ${it.radio} ${it.label}</p>
+              </g:radioGroup>
+            </fieldset>
+            <fieldset class="buttons" style="margin: 8px;">
+              <g:actionSubmit class="save" action="showData" value="Desplegar Información" />
+            </fieldset>
+          </g:form>
+        </div>
+
+      </div>
+
+      <div style="float:left;">
+        <div id="description" style="clear:both;">
+          <h1 style="text-align:center;font-size: 14px;font-weight: bolder;"><%=tituloPrincipal%></h1>
+        </div>
+        <div id="map" class="smallmap" style="width:600px;height:600px;"></div>
+      </div>
+
+      </div>
+
+    </body>
+    </html>

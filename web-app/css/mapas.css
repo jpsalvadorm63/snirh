@@ -1,0 +1,47 @@
+#map {
+  float: left;
+  position: relative;
+  width: 552px;
+  height: 552px;
+  border: 1px solid black;
+  margin:4px;
+}
+
+#wrapper {
+  width: 470px;
+}
+
+#location {
+  float: right;
+}
+
+/* Styles used by the default GetFeatureInfo output, added to make IE happy */
+table.featureInfo, table.featureInfo td, table.featureInfo th {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  font-size: 90%;
+  padding: .2em .1em;
+}
+
+table.featureInfo th {
+  padding: .2em .2em;
+  font-weight: bold;
+  background: #eee;
+}
+
+table.featureInfo td {
+  background: #fff;
+}
+
+table.featureInfo tr.odd td {
+  background: #eee;
+}
+
+table.featureInfo caption {
+  text-align: left;
+  font-size: 100%;
+  font-weight: bold;
+  padding: .2em .2em;
+}

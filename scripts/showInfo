@@ -1,0 +1,303 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta name="layout" content="main">
+  <link rel="stylesheet" href="${resource(dir:'openlayers', file: 'theme/default/style.css')}" type="text/css" />
+  <script src="${resource(dir:'openlayers', file:'OpenLayers.js')}"></script>
+  <link rel="stylesheet" href="${resource(dir:'openlayers', file:'style.css')}" type="text/css" />
+  <style type="text/css">
+    body {
+      background: url("${resource(dir: 'images', file: 'box-bg.png')}") repeat;
+      min-height:1080px;
+      min-width:960px;
+    }
+
+    div.main_top {
+      clear: both;
+      background: url("${resource(dir: 'images', file: 'main-top.png')}") no-repeat top left ;
+      border-width:0;
+      height:96px;
+      display:none;
+    }
+
+    div#menu {
+      top:2px;
+      width:100%;
+      background:transparent url("${resource(dir: 'menu/images', file: 'header_bg.gif')}") repeat-x 0 0;
+    }
+
+    .container0 {
+      position:relative;
+      padding-left:200px;
+      padding-right:240px;
+      min-width: 800px;
+    }
+
+    .container0 .left-panel {
+      width: 200px;
+      position:absolute;
+      left:0;
+      top:0;
+      background-color: #b0c4de;
+    }
+
+    .container0 .right-panel {
+      width: 240px;
+      position:absolute ;
+      right:0;
+      top:0;
+      bottom:0;
+      background-color: #add8e6;
+    }
+
+    .container0 .center-panel {}
+
+    div.titulo {
+
+      position: relative;
+      padding: 16px;
+      margin: 8px 4px 4px 4px;
+      font-size:12px;
+      text-align: center;
+      background-color: #718bb7;
+      border: 2px blue;
+      color:white;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+      clear:both;
+    }
+
+    div.smallmap {
+      position:relative;
+      height:700px;
+      min-width:340px;
+      width:100%;
+      margin-left:auto;
+      margin-right:auto;
+      border: 1px silver solid;
+      bottom:0;
+    }
+    div.tituloSelection {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: bold ;
+    }
+    td {height:16px;}
+    td.selection a {
+      color: #000044;
+      text-decoration: none;
+    }
+    td.selected {
+      background-color: #718bb7;
+    }
+    td.selected a, p a {
+      color: #f5f5dc;
+      background-color: #718bb7;
+      text-decoration: none;
+    }
+  </style>
+
+  <script type="text/javascript">
+
+    var map;
+    format = 'image/png';
+    function init(){
+      $('.container0').hide().fadeIn(3000);
+
+      var bounds = new OpenLayers.Bounds( <%=box%> );
+
+      map = new OpenLayers.Map('map', {
+        controls: [
+          new OpenLayers.Control.Navigation({
+            dragPanOptions: {
+              enableKinetic: true
+            }
+          }),
+          new OpenLayers.Control.PanZoomBar(),
+          new OpenLayers.Control.LayerSwitcher({'ascending':false}),
+          new OpenLayers.Control.ScaleLine(),
+          new OpenLayers.Control.MousePosition(),
+          // new OpenLayers.Control.OverviewMap(),
+          new OpenLayers.Control.KeyboardDefaults()
+        ],
+        allOverlays: true,
+        numZoomLevels: 10,
+        maxExtent: bounds,
+        maxResolution: 2795.3264132812546,
+        projection: "EPSG:32717",
+        units: 'm'
+      });
+      map.fractionalZoom = true;
+
+      var mapaBase = new OpenLayers.Layer.WMS( "Demarcaciones",
+          "${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "${geomapa}",
+            format: format,
+            transparent:"true"
+          },
+          { isBaseLayer: false ,
+            yx : {'EPSG:32717' : false}
+          } );
+      var mapaRiosS = new OpenLayers.Layer.WMS( "Rios Simples",
+          "${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "riosS${otrosMapas}",
+            format: format,
+            transparent:"true"
+          },
+          { isBaseLayer: false,
+            visibility: <%=mapaVisible[0]%>,
+            yx : {'EPSG:32717' : false}
+          } );
+
+      var mapaRiosD = new OpenLayers.Layer.WMS( "Rios Dobles","${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "riosD${otrosMapas}",
+            format: format,
+            transparent:"true"
+          },
+          { isBaseLayer: false,
+            visibility: <%=mapaVisible[1]%>,
+            yx : {'EPSG:32717' : false}
+          } );
+
+      var mapaHI = new OpenLayers.Layer.WMS( "Hidrología","${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "hidrologia${otrosMapas}",
+            format: format,
+            transparent:"true"
+          },
+          { isBaseLayer: "false",
+            visibility: <%=mapaVisible[2]%>,
+            yx : {'EPSG:32717' : false}
+          } );
+
+      var mapaMET = new OpenLayers.Layer.WMS( "Meteorología",
+          "${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "meteorologia${otrosMapas}",
+            format: format,
+            transparent:true
+          },
+          { isBaseLayer: false,
+            visibility: <%=mapaVisible[3]%>,
+            yx : {'EPSG:32717' : false}
+          } );
+
+      var mapaHG = new OpenLayers.Layer.WMS( "Hidrogeología",
+          "${geoserver}/HIDRO/wms",
+          { <%=viewparams%>
+            layers: "hidrogeologia${otrosMapas}",
+            format: format,
+            transparent:true
+          },
+          { isBaseLayer: false,
+            visibility: <%=mapaVisible[4]%>,
+            yx : {'EPSG:32717' : false}
+          } );
+
+      map.events.register('click', map, function (e) {
+        var lonLat = map.getLonLatFromPixel(e.xy);
+        $.ajax({
+          url:"${g.createLink(controller:'geoserver',action:'click')}",
+          data: {
+            scale: map.getScale(),
+            longitud : lonLat.lon,
+            latitud : lonLat.lat,
+            paramController : "${returnp.controller}",
+            paramAction : "${returnp.action}",
+            paramId : "${returnp.paramId}"
+          },
+          success: function(data) {
+            document.getElementById('clickresult').innerHTML = data;
+          }
+        });
+      });
+
+      map.events.register('zoomend', map, function () {
+        $.ajax({
+          url : "${g.createLink(controller:'geoserver',action:'click')}",
+          data : {
+            scale : map.getScale(),
+            extent : map.getExtent()
+          },
+          success: function(data) {
+            document.getElementById('clickresult').innerHTML = data;
+          }
+
+        });
+      });
+
+      map.addLayers([mapaBase, mapaRiosS, mapaRiosD , mapaHI , mapaMET, mapaHG ]);
+      map.zoomToMaxExtent();
+
+    }
+  </script>
+
+</head>
+<body onload="init()">
+  <div id="menu">
+    <ul class="menu">
+      <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+      <li><g:link controller="geoserver" action="showInfo" id="Demarcaciones">Demarcaciones</g:link></li>
+      <li><g:link controller="geoserver" action="showInfo" id="Sistemas">Sistemas</g:link></li>
+      <li><g:link controller="geoserver" action="showInfo" id="Niveles1">Pfafstetter</g:link></li>
+      <li><g:link controller="geoserver" action="showInfo" id="Provincias">Provincias</g:link></li>
+    </ul>
+  </div>
+
+  <div class="container0">
+
+  <div class="left-panel" style="bottom: 0;">
+    <div class="main-list">
+      <div class="titulo" style="height:72px;">
+        <p><%=tituloPrincipal%></p>
+        <p style="font-size: 14px;"><%=zona%></p>
+        <g:form method="post" >
+          <g:hiddenField name="paramController" value="${returnp.controller}" />
+          <g:hiddenField name="paramAction" value="${returnp.action}" />
+          <g:hiddenField name="paramId" value="${returnp.id}" />
+          <g:hiddenField name="dominio" value="HI" />
+          <fieldset class="buttons" style="margin: 8px 2px 8px 2px;">
+            <g:actionSubmit class="save" action="showData" value="Desplegar Información" />
+          </fieldset>
+        </g:form>
+      </div>
+      <div style="overflow-y: auto;height:473px;overflow-x:hidden;">
+        <table style="margin: 8px 0 0 8px">
+          <thead><tr><th><%=tituloSeleccion%></th></tr></thead>
+          <tbody>
+          <g:each in="${mainList}" var="ml">
+            <tr>
+              <td class="${(selectedCdgo == ml.id)?'selected':'selection'}">
+                <g:link controller="${ml.geoserver}" action="${ml.action}" id="${ml.id}"><%=ml.nombre%></g:link>
+              </td>
+            </tr>
+          </g:each>
+          </tbody>
+        </table>
+      </div>
+      <div class="titulo" style="height:24px;vertical-align:middle;margin:16px 8px 16px 4px;box-shadow: 4px 4px 5px #888;">
+        <g:if test="${explorerAction != ''}">
+          <p>Explorar</p>
+          <p>
+            <g:link controller="geoserver" action="${explorerAction}" id="${explorerId}" style="color:#ffff00;"><%=zona%></g:link>
+          </p>
+        </g:if>
+      </div>
+    </div>
+  </div>
+
+  <div class="center-panel">
+    <div id="map" class="smallmap">
+    </div>
+  </div>
+
+  <div id="clickresult" class="right-panel">
+     <g:render template="listPohms"/>
+  </div>
+
+  </div>
+
+</body>
+</html>
